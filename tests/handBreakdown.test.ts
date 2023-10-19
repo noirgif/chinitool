@@ -16,13 +16,18 @@ describe("isValidBreakdown", () => {
         expect(isValidBreakdown(hand)).toBe(true)
     })
 
+    test('should return true for a sequence', () => {
+        let hand = [0, 0, 1, 1, 1, ...Array(33).fill(0)]
+        expect(isValidBreakdown(hand)).toBe(true)
+    })
+
     test('return true for a sequence and a pair', () => {
         let hand = [0, 1, 1, 1, 2, ...Array(33).fill(0)]
         expect(isValidBreakdown(hand)).toBe(true)
     })
 
     test('should return false for invalid breakdowns', () => {
-        let hand = [1, ...Array(37).fill(0)]
+        let hand = [0, 1,...Array(36).fill(0)]
         expect(isValidBreakdown(hand)).toBe(false)
     })
 
@@ -52,8 +57,7 @@ describe("winningHandBreakdownHelper", () => {
     })
 
     test('Should break down a open pair', () => {
-        let hand = Array(38).fill(0)
-        hand[2] = 1
+        let hand = [0, 0, 1, ...Array(35).fill(0)]
         let result = winningHandBreakdownHelper(hand, 2, true).next().value
         expect(result).toEqual([{
             start: 2,
@@ -62,6 +66,18 @@ describe("winningHandBreakdownHelper", () => {
             kind: HandKind.toitsu,
             waitTile: 2
         }])
+    })
+
+    test('Should break down a concealed sequence', () => {
+        let hand = [0, 0, 1, 1, 1, ...Array(33).fill(0)]
+        let result = winningHandBreakdownHelper(hand, NullTile, false).next().value
+        expect(result).toContainEqual({
+            start: 2,
+            open: false,
+            wait: Wait.finished,
+            kind: HandKind.shuntsu,
+            waitTile: NullTile
+        })
     })
 
     test('Should break down a concealed triplet', () => {
@@ -119,6 +135,18 @@ describe("winningHandBreakdownHelper", () => {
         })
     })
 
+    test('Should break down nobetan machi', () => {
+        let hand = [0, 1, 1, 1, 1, ...Array(33).fill(0)]
+        let result = winningHandBreakdownHelper(hand, 4, false).next().value
+        expect(result).toContainEqual({
+            start: 4,
+            open: false,
+            wait: Wait.tanki,
+            kind: HandKind.toitsu,
+            waitTile: 4
+        })
+    })
+
     test('Should break down sequence like 11123444 in two ways', () => {
         let hand = [0, 3, 1, 1, 3, 0, 0, 0, 0, ...Array(29).fill(0)]
         let result = Array.from(winningHandBreakdownHelper(hand, NullTile, false))
@@ -143,6 +171,60 @@ describe("winningHandBreakdownHelper", () => {
                 waitTile: NullTile
             }
         ])
+        expect(result.length).toBe(2)
+    })
+
+    test('Should break down open handed sequence like 1112344 + 4 in 3 ways: tanki, ryanmen, shanpon', () => {
+        let hand = [0, 3, 1, 1, 2, 0, 0, 0, 0, ...Array(29).fill(0)]
+        let result = Array.from(winningHandBreakdownHelper(hand, 4, false))
+        expect(result).toContainEqual([
+            {
+                start: 2,
+                open: false,
+                wait: Wait.finished,
+                kind: HandKind.shuntsu,
+                waitTile: NullTile
+            }, {
+                start: 1,
+                open: false,
+                wait: Wait.finished,
+                kind: HandKind.koutsu,
+                waitTile: NullTile
+            }, {
+                start: 4,
+                open: false,
+                wait: Wait.tanki,
+                kind: HandKind.toitsu,
+                waitTile: 4
+            }
+        ])
+        expect(result).toContainEqual([
+            {
+                start: 4,
+                open: false,
+                wait: Wait.finished,
+                kind: HandKind.toitsu,
+                waitTile: NullTile
+            }, {
+                start: 1,
+                open: false,
+                wait: Wait.finished,
+                kind: HandKind.koutsu,
+                waitTile: NullTile
+            }, {
+                start: 2,
+                open: false,
+                wait: Wait.ryanmen,
+                kind: HandKind.shuntsu,
+                waitTile: 4
+            }
+        ])
+        expect(result.length).toBe(3)
+    })
+
+    test('Should break down sequence like 11122233355566 in two ways', () => {
+        let hand = [0, 3, 3, 2, 0, 3, 2, 0, 0, 0, 0, ...Array(27).fill(0)]
+        let result = Array.from(winningHandBreakdownHelper(hand, 3, false))
         expect(result.length).toBe(2)
     })
 })

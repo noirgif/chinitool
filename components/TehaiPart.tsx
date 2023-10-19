@@ -10,25 +10,25 @@ export default function TehaiPart({
     switch (kind) {
         case HandKind.shuntsu:
             return (
-                <div className="flex flex-row gap-1">
-                    <MahjongTile suit={start.suit} value={start.value} />
-                    <MahjongTile suit={start.suit} value={start.value + 1} />
-                    <MahjongTile suit={start.suit} value={start.value + 2} />
+                <div className="flex flex-row" style={{margin: '5px'}}>
+                    <MahjongTile key='1' suit={start.suit} value={start.value} />
+                    <MahjongTile key='2' suit={start.suit} value={start.value + 1} />
+                    <MahjongTile key='3' suit={start.suit} value={start.value + 2} />
                 </div>
             )
         case HandKind.koutsu:
             return (
-                <div className="flex flex-row gap-1">
-                    <MahjongTile suit={start.suit} value={start.value} />
-                    <MahjongTile suit={start.suit} value={start.value} />
-                    <MahjongTile suit={start.suit} value={start.value} />
+                <div className="flex flex-row" style={{margin: '5px'}}>
+                    <MahjongTile key='1' suit={start.suit} value={start.value} />
+                    <MahjongTile key='2' suit={start.suit} value={start.value} />
+                    <MahjongTile key='3' suit={start.suit} value={start.value} />
                 </div>
             )
         case HandKind.toitsu:
             return (
-                <div className="flex flex-row gap-1">
-                    <MahjongTile suit={start.suit} value={start.value} />
-                    <MahjongTile suit={start.suit} value={start.value} />
+                <div className="flex flex-row" style={{margin: '5px'}}>
+                    <MahjongTile key='1' suit={start.suit} value={start.value} />
+                    <MahjongTile key='2' suit={start.suit} value={start.value} />
                 </div>
             )
         default:

@@ -39,20 +39,11 @@ function numIndex(tile: TileIndex): number {
 
 export const NullTile = 30
 
+// a easy sanity check for the breakdown
 export function isValidBreakdown(hand: TileCounts): boolean {
-    // if there is no pair, then there is no winning hand
-    let hasPair = false
-    let empty = true
-
     for (let i = 0; i < hand.length; ++i) {
-        if (hand[i] == 0)
+        if (hand[i] != 1)
             continue
-
-        empty = false
-        if (hand[i] >= 2) {
-            hasPair = true
-            continue
-        }
 
         // not considering kokushi
         if (isHonor(i))
@@ -70,7 +61,7 @@ export function isValidBreakdown(hand: TileCounts): boolean {
             return false
     }
 
-    return empty || hasPair
+    return true
 }
 
 export function findPair(hand: TileCounts, winningTile: TileIndex, open: boolean): TehaiPart | null {
@@ -125,7 +116,7 @@ export function* winningHandBreakdownHelper(hand: TileCounts, winningTile: TileI
 
     // use winning tile first
     if (winningTile != NullTile) {
-        // waiting triplets
+        // shanpon wait
         if (hand[winningTile] >= 2) {
             hand[winningTile] -= 2
             for (let breakdown of winningHandBreakdownHelper(hand, NullTile, open)) {
@@ -140,7 +131,7 @@ export function* winningHandBreakdownHelper(hand: TileCounts, winningTile: TileI
             }
             hand[winningTile] += 2
         }
-        // waiting pair
+        // tanki wait
         if (hand[winningTile] >= 1 && remainingTiles % 3 == 2) {
             hand[winningTile]--
             for (let breakdown of winningHandBreakdownHelper(hand, NullTile, open)) {
@@ -153,10 +144,13 @@ export function* winningHandBreakdownHelper(hand: TileCounts, winningTile: TileI
                 })
                 yield breakdown
             }
+            hand[winningTile]++
         }
+        
         if (isHonor(winningTile))
             return
-        // waiting sequences
+
+        // shuntsu wait
         if (numIndex(winningTile) <= 7 && hand[winningTile + 1] > 0 && hand[winningTile + 2] > 0) {
             hand[winningTile + 1]--
             hand[winningTile + 2]--
@@ -205,6 +199,7 @@ export function* winningHandBreakdownHelper(hand: TileCounts, winningTile: TileI
             hand[winningTile - 1]++
             hand[winningTile - 2]++
         }
+        return
     }
 
     // concealed triplets
@@ -254,13 +249,14 @@ export function* winningHandBreakdownHelper(hand: TileCounts, winningTile: TileI
                     hand[i + 1] -= tmp
                     hand[i + 2] -= tmp
                     for (let breakdown of winningHandBreakdownHelper(hand, winningTile, open)) {
-                        breakdown.push({
-                            start: i,
-                            open: false,
-                            wait: Wait.finished,
-                            kind: HandKind.shuntsu,
-                            waitTile: NullTile
-                        })
+                        for (let j = 0; j < tmp; ++j)
+                            breakdown.push({
+                                start: i,
+                                open: false,
+                                wait: Wait.finished,
+                                kind: HandKind.shuntsu,
+                                waitTile: NullTile
+                            })
                         yield breakdown
                     }
                     hand[i] = tmp
