@@ -1,14 +1,17 @@
 'use client'
 import Tehai from '@/components/Tehai'
 import TehaiInput from '@/components/TehaiInput';
-import { mahjongTile } from '@/types/mahjongTile';
+import { mahjongTile } from '@/types/mahjong';
 import { useState } from 'react';
 
 import { calculateShanten } from '@/lib/calculateShanten';
+import { winningHandBreakdown } from '@/lib/handBreakdown';
+import TehaiPart from '@/components/TehaiPart';
 
 export default function Home() {
-  const [tehai, setTehai]: [mahjongTile[], Function] = useState([{ suit: "pin", value: 1 }, { suit: "sou", value: 0 }]);
+  const [tehai, setTehai]: [mahjongTile[], Function] = useState([]);
   let shantenText = ''
+  let breakdownComponent: JSX.Element[] = []
   if (tehai.length == 14) {
     let shanten = calculateShanten(tehai)
     switch (shanten) {
@@ -21,6 +24,14 @@ export default function Home() {
       default:
         shantenText = `${shanten}向聴`
     }
+
+    for (let breakdown of winningHandBreakdown(tehai.slice(0, 13), tehai[13], false)) {
+      breakdownComponent.push(
+        <div style={{display: 'flex', flexDirection: 'row', gap: '1px'}}>
+          {breakdown.map((part) => <TehaiPart {...part} />)}
+        </div>
+      )
+    }
   }
   return (
     <>
@@ -32,6 +43,9 @@ export default function Home() {
         <h4 style={{ height: '48px' }}>
           {shantenText}
         </h4>
+      </div>
+      <div style={{ height: '80px' }}>
+        {breakdownComponent}
       </div>
     </>
   )

@@ -1,28 +1,28 @@
 import React from 'react'
-import { mahjongTile } from '../types/mahjongTile'
+import { mahjongSuit, mahjongTile } from '../types/mahjong'
 import Image from 'next/image'
 
 export default function MahjongTile({suit, value}: mahjongTile) {
     let tileName = ''
     if (value === 0) {
         switch (suit) {
-            case 'man':
+            case mahjongSuit.man:
                 tileName = "aka3"
                 break
-            case 'pin':
+            case mahjongSuit.pin:
                 tileName = "aka1"
                 break
-            case 'sou':
+            case mahjongSuit.sou:
                 tileName = "aka2"
                 break
             default:
                 throw new Error("Invalid suit")
         }
     } else {
-        tileName = `${suit}${value}`
+        tileName = `${mahjongSuit[suit]}${value}`
     }
 
     return (
-            <Image src={`/pai-images/${tileName}-66-90-l.png`} style={{height: '48px', float:'left'}} alt={tileName} />
+            <Image src={`/pai-images/${tileName}-66-90-l.png`} alt={tileName} height={30} width={22} style={{float: 'left'}} />
     )
 };

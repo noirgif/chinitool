@@ -1,40 +1,13 @@
-import { mahjongTile } from "@/types/mahjongTile";
+import { mahjongSuit, mahjongTile } from "@/types/mahjong";
 
 function parseTehai(tehai: string): mahjongTile[] {
     const result: mahjongTile[] = []
     for (let i = 0; i < tehai.length; i++) {
-        switch (tehai.charAt(i)) {
-            case '0':
-                result.push({suit: "sou", value: 0})
-                break
-            case '1':
-                result.push({suit: "sou", value: 1})
-                break
-            case '2':
-                result.push({suit: "sou", value: 2})
-                break
-            case '3':
-                result.push({suit: "sou", value: 3})
-                break
-            case '4':
-                result.push({suit: "sou", value: 4})
-                break
-            case '5':
-                result.push({suit: "sou", value: 5})
-                break
-            case '6':
-                result.push({suit: "sou", value: 6})
-                break
-            case '7':
-                result.push({suit: "sou", value: 7})
-                break
-            case '8':
-                result.push({suit: "sou", value: 8})
-                break
-            case '9':
-                result.push({suit: "sou", value: 9})
-                break
-            default:
+        if (tehai.charAt(i) <= '9' && tehai.charAt(i) >= '1') {
+            result.push({
+                suit: mahjongSuit.sou,
+                value: parseInt(tehai.charAt(i))
+            })
         }
     }
     return result
