@@ -1,4 +1,4 @@
-import { HandKind, TehaiPart, TileCounts, Wait } from "@/types/mahjong";
+import { HandKind, TehaiPart, TileCounts, Wait } from "../types/mahjong";
 import { getSuit, isHonor, isNine, isOne, numIndex } from "./util";
 import { NullTile } from "./handBreakdown";
 
@@ -357,7 +357,7 @@ export function checkIkki(hand: TileCounts, breakdown: TehaiPart[]): boolean {
   ];
   for (let part of breakdown) {
     if (part.kind == HandKind.shuntsu && numIndex(part.start) % 3 == 1) {
-      ikki_count[getSuit(part.start)][numIndex(part.start) / 3]++;
+      ikki_count[getSuit(part.start)][Math.floor(numIndex(part.start) / 3)]++;
     }
   }
   for (let suit = 0; suit < ikki_count.length; ++suit) {
@@ -406,5 +406,5 @@ export function countYaku(
     }
   }
 
-  return { han, yakuman, yaku: countedYaku, yakuman_name: countedYakuman};
+  return { han, yakuman, yaku: countedYaku, yakuman_name: countedYakuman };
 }
