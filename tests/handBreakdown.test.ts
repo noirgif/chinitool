@@ -1,5 +1,6 @@
 import { HandKind, TileCounts, Wait } from "../types/mahjong";
-import { isValidBreakdown, Man, Pin, Sou, Honor, NullTile, winningHandBreakdownHelper } from "../lib/handBreakdown";
+import { isValidBreakdown, NullTile, winningHandBreakdownHelper } from "../lib/handBreakdown";
+import { Man, Pin, Sou, Honor } from "@/lib/util";
 
 describe("isValidBreakdown", () => {
     test('empty hand is valid', () => {
@@ -105,7 +106,7 @@ describe("winningHandBreakdownHelper", () => {
         expect(result).toContainEqual({
             start: 1,
             open: true,
-            wait: Wait.shanpon,
+            wait: Wait.pon,
             kind: HandKind.koutsu,
             waitTile: 1
         })
@@ -226,5 +227,43 @@ describe("winningHandBreakdownHelper", () => {
         let hand = [0, 3, 3, 2, 0, 3, 2, 0, 0, 0, 0, ...Array(27).fill(0)]
         let result = Array.from(winningHandBreakdownHelper(hand, 3, false))
         expect(result.length).toBe(2)
+    })
+
+    test('Ittsu pinfu', () => {
+        let hand = [0, 1, 3, 2, 2, 1, 1, 1, 1, 1,...Array(28).fill(0)]
+        let result = Array.from(winningHandBreakdownHelper(hand, 5, false))
+        expect(result).toContainEqual([
+            {
+                start: 7,
+                open: false,
+                wait: Wait.finished,
+                kind: HandKind.shuntsu,
+                waitTile: NullTile
+            }, {
+                start: 4,
+                open: false,
+                wait: Wait.finished,
+                kind: HandKind.shuntsu,
+                waitTile: NullTile
+            }, {
+                start: 2,
+                open: false,
+                wait: Wait.finished,
+                kind: HandKind.toitsu,
+                waitTile: NullTile
+            }, {
+                start: 1,
+                open: false,
+                wait: Wait.finished,
+                kind: HandKind.shuntsu,
+                waitTile: NullTile
+            }, {
+                start: 3,
+                open: false,
+                wait: Wait.ryanmen,
+                kind: HandKind.shuntsu,
+                waitTile: 5
+            }
+        ])
     })
 })

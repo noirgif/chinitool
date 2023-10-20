@@ -11,12 +11,14 @@ export type mahjongTile = {
 }
 
 export enum Wait {
+    finished,
     tanki,
     ryanmen,
     kanchan,
     penchan,
-    shanpon,
-    finished
+    pon,
+    minkan,
+    ankan,
 }
 
 export enum HandKind {

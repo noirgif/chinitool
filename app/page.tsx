@@ -5,8 +5,10 @@ import { mahjongTile } from '@/types/mahjong';
 import { useState } from 'react';
 
 import { calculateShanten } from '@/lib/calculateShanten';
-import { winningHandBreakdown } from '@/lib/handBreakdown';
+import { toMahjongTehaiPart, winningHandBreakdown, winningHandBreakdownHelper } from '@/lib/handBreakdown';
 import TehaiPart from '@/components/TehaiPart';
+import { convertToCalculatorFormat, convertToCalculatorTile } from '@/lib/tileFormatConversion';
+import { countYaku } from '@/lib/yaku';
 
 export default function Home() {
   const [tehai, setTehai]: [mahjongTile[], Function] = useState([]);
@@ -26,13 +28,19 @@ export default function Home() {
     }
 
     let breakdownCount = 0
-    for (let breakdown of winningHandBreakdown(tehai.slice(0, 13), tehai[13], false)) {
+    const hand = convertToCalculatorFormat(tehai.slice(0, 13))
+    const hand14 = convertToCalculatorFormat(tehai)
+    for (let breakdown of winningHandBreakdownHelper(hand, convertToCalculatorTile(tehai[13]), false)) {
+      const yaku_result = countYaku(hand14, breakdown)
+      const yaku_strings = yaku_result.yakuman ? yaku_result.yakuman_name : yaku_result.yaku
       breakdownComponent.push(
         <li key={breakdownCount} style={{display: 'flex', flexDirection: 'row', gap: '1px'}}>
-          {breakdown.map((part, i) => <TehaiPart key={i} {...part} />)}
+          {breakdown.map((part, i) => <TehaiPart key={i} {...toMahjongTehaiPart(part)} />)}
+          {yaku_strings.map((yaku, i) => <span key={i} className='flex mx-1'>{yaku}</span>)}
         </li>
       )
       breakdownCount++
+
       if (breakdownCount > 10) {
         break
       }
@@ -53,6 +61,9 @@ export default function Home() {
       <ul>
         {breakdownComponent}
       </ul>
+      <div>
+        {}
+      </div>
     </>
   )
 }
